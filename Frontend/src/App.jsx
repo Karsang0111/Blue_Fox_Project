@@ -41,6 +41,7 @@ function App() {
         <Route path="/project-details" element={<Project />} />
         <Route path="/projects/:city/:id" element={<ProjectDetail />} />
         {/* Admin Login Route */}
+        
         <Route path="/roommates" element={<Roommates />} />
         <Route path="/roommatedetail/:id" element={<RoommateDetail />} />
         <Route path="/roomdetails/:id" element={<RoomDetails />} />

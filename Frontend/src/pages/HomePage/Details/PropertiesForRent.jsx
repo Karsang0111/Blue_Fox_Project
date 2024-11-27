@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ApartmentPic from "../../../assets/ApartmentPic.png";
 import House from "../../../assets/House.png";
@@ -7,13 +7,32 @@ import Apartment from "../../../assets/Apartment.png";
 
 const PropertiesForRent = () => {
   const filters = ["Most Popular", "By Property Type", "By BHK"];
-  const properties = [
-    { id: 1, image: ApartmentPic, title: "2 BHK Apartments" },
-    { id: 2, image: RoomPic, title: "Office Space" },
-    { id: 3, image: House, title: "3 BHK Apartments" },
-    { id: 4, image: Apartment, title: "Flats / Apartments" },
-    { id: 5, image: House, title: "Commercial Shops" },
+  
+  const allProperties = [
+    { id: 1, image: ApartmentPic, title: "2 BHK Apartments", type: "Apartment", bhk: "2 BHK", popularity: 80 },
+    { id: 2, image: RoomPic, title: "Office Space", type: "Commercial", bhk: null, popularity: 70 },
+    { id: 3, image: House, title: "3 BHK Apartments", type: "Apartment", bhk: "3 BHK", popularity: 95 },
+    { id: 4, image: Apartment, title: "Flats / Apartments", type: "Apartment", bhk: "1 BHK", popularity: 85 },
+    { id: 5, image: House, title: "Commercial Shops", type: "Commercial", bhk: null, popularity: 60 },
   ];
+
+  const [selectedFilter, setSelectedFilter] = useState(filters[0]);
+  const [filteredProperties, setFilteredProperties] = useState(allProperties);
+
+  const handleFilterChange = (filter) => {
+    setSelectedFilter(filter);
+
+    // Apply filtering logic
+    if (filter === "Most Popular") {
+      setFilteredProperties([...allProperties].sort((a, b) => b.popularity - a.popularity));
+    } else if (filter === "By Property Type") {
+      setFilteredProperties([...allProperties].filter((property) => property.type === "Apartment"));
+    } else if (filter === "By BHK") {
+      setFilteredProperties([...allProperties].filter((property) => property.bhk && property.bhk.includes("BHK")));
+    } else {
+      setFilteredProperties(allProperties); // Default to all properties
+    }
+  };
 
   return (
     <div className="bg-white text-blue-700 flex flex-col items-center">
@@ -27,7 +46,12 @@ const PropertiesForRent = () => {
         {filters.map((filter, index) => (
           <button
             key={index}
-            className="px-4 py-1 bg-blue-600 text-white rounded-full text-sm hover:bg-blue-700 transition"
+            onClick={() => handleFilterChange(filter)}
+            className={`px-4 py-1 rounded-full text-sm transition border border-blue-600 ${
+              selectedFilter === filter
+                ? "bg-blue-600 text-white"
+                : "bg-white text-blue-600 hover:bg-blue-600 hover:text-white"
+            }`}
           >
             {filter}
           </button>
@@ -36,7 +60,7 @@ const PropertiesForRent = () => {
 
       {/* Property Cards */}
       <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 px-8">
-        {properties.map((property) => (
+        {filteredProperties.map((property) => (
           <Link
             to={`/rent?type=${encodeURIComponent(property.title)}`} // Pass the title as query parameter
             key={property.id}
